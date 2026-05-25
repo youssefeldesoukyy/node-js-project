@@ -1,0 +1,14 @@
+# Deploy this API on Render (free).
+# https://render.com → New + Web Service → connect this repo
+# Build: npm ci   Start: npm start   Health: /health
+# Add env: MONGO_URL_YWAELE or MONGO_URL, JWT_SECRET_KEY, FRONTEND_URL, STRIPE_*, etc.
+
+services:
+  - type: web
+    name: node-js-project-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
