@@ -5,8 +5,8 @@ const Order = require('../models/order.model');
 const httpStatusText = require('../utils/httpStatus');
 const appError = require('../utils/appError');
 
-/** Buyers may review after delivery or when admin marks the order shipped. */
-const REVIEWABLE_ORDER_STATUSES = ['delivered', 'shipped', 'confirmed'];
+/** Buyers may review only after admin marks the order as received (delivered). */
+const REVIEWABLE_ORDER_STATUSES = ['delivered'];
 
 function sellerDisplayName(user) {
     if (!user) return 'Seller';
@@ -86,7 +86,7 @@ const addReview = asyncWrapper(async (req, res, next) => {
     });
 
     if (!order) {
-        const error = appError.create('you can only review after your order has been shipped', 400, httpStatusText.FAIL);
+        const error = appError.create('you can only review after your order has been received', 400, httpStatusText.FAIL);
         return next(error);
     }
 

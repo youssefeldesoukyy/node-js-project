@@ -281,7 +281,7 @@ const checkout = asyncWrapper(async (req, res, next) => {
         address,
         products: cart.products,
         amount: grandTotal,
-        status: 'delivered',
+        status: 'confirmed',
     });
 
     await newOrder.save();

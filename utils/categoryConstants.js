@@ -7,6 +7,7 @@ const ALLOWED_SUBCATEGORIES = [
     'tshirts',
     'tops',
     'accessories',
+    'shoes',
     'dresses',
     'bottoms',
     'sweatshirts',
@@ -18,8 +19,7 @@ const SUBCATEGORY_ALIASES = {
     sweatshirt: 'sweatshirts',
     skirt: 'bottoms',
     skirts: 'bottoms',
-    shoes: 'accessories',
-    shoe: 'accessories',
+    shoe: 'shoes',
     bags: 'accessories',
     bag: 'accessories',
 };

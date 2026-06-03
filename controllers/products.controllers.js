@@ -69,7 +69,21 @@ function productNameForAi(product, override) {
     if (override != null && String(override).trim() !== '') {
         return String(override).trim().slice(0, 500);
     }
+    if (product.name != null && String(product.name).trim() !== '') {
+        return String(product.name).trim().slice(0, 500);
+    }
     return String(product.description || '').trim().slice(0, 500);
+}
+
+function resolveListingName(body, description) {
+    const fromBody =
+        (body.name != null && String(body.name).trim() !== '')
+            ? String(body.name).trim()
+            : (body.productName != null && String(body.productName).trim() !== '')
+                ? String(body.productName).trim()
+                : '';
+    if (fromBody) return fromBody.slice(0, 120);
+    return String(description || '').trim().slice(0, 120);
 }
 
 function listedPriceFromSuggestion(suggestion) {
@@ -322,11 +336,14 @@ const addProduct = asyncWrapper(async (req, res, next) => {
         return next(appError.create(sizeResult.message, 400, httpStatusText.FAIL));
     }
 
+    const listingName = resolveListingName(req.body, description);
+
     // احفظ المنتج
     const newProduct = new Product({
         userId: req.currentUser.id,
         categoryId: leaf._id,
         gender,
+        name: listingName,
         description: String(description).trim(),
         price: priceNum,
         condition,
@@ -384,11 +401,18 @@ const updateProduct = asyncWrapper(async (req, res, next) => {
         req.body.categoryId = leaf._id;
     }
 
-    const allowed = ['description', 'price', 'condition', 'size', 'brand', 'material', 'color', 'gender', 'categoryId'];
+    const allowed = ['name', 'description', 'price', 'condition', 'size', 'brand', 'material', 'color', 'gender', 'categoryId'];
     const patch = {};
     allowed.forEach((key) => {
         if (req.body[key] !== undefined) patch[key] = req.body[key];
     });
+    if (req.body.name === undefined && (req.body.productName !== undefined)) {
+        patch.name = String(req.body.productName).trim().slice(0, 120);
+    }
+    if (patch.name !== undefined) {
+        patch.name = String(patch.name).trim().slice(0, 120);
+        if (!patch.name) delete patch.name;
+    }
 
     if (patch.categoryId !== undefined) {
         const leaf = await resolveProductLeafCategory(patch.categoryId, next);

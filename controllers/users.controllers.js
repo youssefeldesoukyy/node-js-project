@@ -33,8 +33,14 @@ const register = asyncWrapper(async (req, res, next) => {
     const { firstName, lastName, email, password, phone, address, role } = req.body;
 
     // التحقق من البيانات المطلوبة
-    if (!firstName || !lastName || !email || !password) {
-        const error = appError.create('firstName, lastName, email and password are required', 400, httpStatusText.FAIL);
+    if (!firstName || !lastName || !email || !password || !phone) {
+        const error = appError.create('firstName, lastName, email, password and phone are required', 400, httpStatusText.FAIL);
+        return next(error);
+    }
+
+    const phoneDigits = String(phone).replace(/\D/g, '');
+    if (!/^01\d{9}$/.test(phoneDigits)) {
+        const error = appError.create('phone must be a valid Egyptian mobile number (11 digits, starts with 01)', 400, httpStatusText.FAIL);
         return next(error);
     }
 
@@ -53,7 +59,7 @@ const register = asyncWrapper(async (req, res, next) => {
         lastName,
         email,
         password: hashedPassword,
-        phone,
+        phone: phoneDigits,
         address,
         role
     });
@@ -73,6 +79,7 @@ const register = asyncWrapper(async (req, res, next) => {
                 email: newUser.email,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
+                phone: newUser.phone,
                 role: newUser.role,
             },
         },

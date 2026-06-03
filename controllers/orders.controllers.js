@@ -100,7 +100,8 @@ const createOrder = asyncWrapper(async (req, res, next) => {
         userId: req.currentUser.id,
         address,
         products,
-        amount
+        amount,
+        status: 'confirmed',
     });
 
     await newOrder.save();
